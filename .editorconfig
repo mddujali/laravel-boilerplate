@@ -1,18 +1,75 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
 root = true
 
+# All files
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 4
-indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# PHP files
+[*.php]
+indent_style = space
+indent_size = 4
+
+# Blade templates
+[*.blade.php]
+indent_style = space
+indent_size = 4
+
+# JavaScript, TypeScript, CSS, SCSS files
+[*.{js,ts,css,scss}]
+indent_style = space
+indent_size = 2
+
+# HTML files
+[*.html]
+indent_style = space
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# XML files
+[*.xml]
+indent_style = space
+indent_size = 4
+
+# Markdown files
 [*.md]
 trim_trailing_whitespace = false
 
-[*.{yml,yaml}]
+# Docker files
+[Dockerfile*]
+indent_style = space
 indent_size = 2
 
-[{compose,docker-compose}.{yml,yaml}]
-indent_size = 4
+# Configuration files
+[*.{env,env.*}]
+insert_final_newline = false
+
+# Configuration files (more specific)
+[*.{neon,conf}]
+indent_style = space
+indent_size = 2
+
+# Package files
+[{package.json,composer.json}]
+indent_style = space
+indent_size = 2
+
+# Lock files
+[{package-lock.json,composer.lock}]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
