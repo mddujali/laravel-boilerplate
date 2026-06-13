@@ -1,30 +1,55 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.codex
-/.cursor/
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+# Packages
 /node_modules
+/bower_components
+/vendor
+
+# Unwanted files and directories
+.rnd
+auth.json
 /public/build
-/public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/public/vendor
 /storage/*.key
-/storage/pail
-/vendor
-_ide_helper.php
-Homestead.json
-Homestead.yaml
-Thumbs.db
-.phpstorm.meta.php
+/storage/api-docs
+/storage/logs/*.log
+
+# Unit testing in local
+.php_cs*
+.phpunit.*
+/storage/coverage
+/public/coverage
+
+# IDEs
+/.fleet
+/.idea
+/.vagrant
+/.vscode
+/.zed
+/.docker
+/.codex
+docker-compose.yml
+docker-compose.override.yml
 _ide_helper.php
 _ide_helper_models.php
+.phpstorm.meta.php
+
+# Configurations
+Homestead.json
+Homestead.yaml
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Environment
+.env
+.env.testing
+.env.local
+.env.development
+.env.staging
+.env.production
+
+# Cache files
+/.phpunit.cache
+.phpunit.result.cache
