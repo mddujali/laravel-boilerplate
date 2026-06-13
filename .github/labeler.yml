@@ -1,0 +1,47 @@
+feature:
+  - base-branch: ['^feature/']
+  - head-branch: ['^feature/']
+
+bugfix:
+  - base-branch: ['^bugfix/']
+  - head-branch: ['^bugfix/']
+
+hotfix:
+  - base-branch: ['^hotfix/']
+  - head-branch: ['^hotfix/']
+
+build:
+  - base-branch: ['^build/']
+  - head-branch: ['^build/']
+
+chore:
+  - base-branch: ['^chore/']
+  - head-branch: ['^chore/']
+
+conflict:
+  - base-branch: ['^conflict/']
+  - head-branch: ['^conflict/']
+
+refactor:
+  - base-branch: ['^refactor/']
+  - head-branch: ['^refactor/']
+
+test:
+  - base-branch: ['^test/']
+  - head-branch: ['^test/']
+
+staging:
+  - base-branch: ['^staging']
+  - head-branch: ['^staging']
+
+release:
+  - base-branch: ['^release/']
+  - head-branch: ['^release/']
+
+released:
+  - base-branch: ['^master']
+  - head-branch: ['^master']
+
+master:
+  - base-branch: ['^master']
+  - head-branch: ['^master']

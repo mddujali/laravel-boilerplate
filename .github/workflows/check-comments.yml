@@ -1,0 +1,84 @@
+name: Check Comments
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+      - dismissed
+  pull_request_review_comment:
+    types:
+      - created
+      - edited
+      - deleted
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check-comments:
+    name: Verify resolved PR conversations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check unresolved review threads
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pullNumber = context.payload.pull_request?.number || context.issue.number;
+
+            const query = `
+              query($owner: String!, $repo: String!, $pullNumber: Int!, $cursor: String) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pullNumber) {
+                    reviewThreads(first: 100, after: $cursor) {
+                      pageInfo {
+                        hasNextPage
+                        endCursor
+                      }
+                      nodes {
+                        isResolved
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            let unresolvedCount = 0;
+            let cursor = null;
+
+            do {
+              const result = await github.graphql(query, {
+                owner,
+                repo,
+                pullNumber,
+                cursor,
+              });
+
+              const reviewThreads = result.repository.pullRequest.reviewThreads;
+
+              unresolvedCount += reviewThreads.nodes.filter(
+                thread => !thread.isResolved
+              ).length;
+
+              cursor = reviewThreads.pageInfo.hasNextPage
+                ? reviewThreads.pageInfo.endCursor
+                : null;
+            } while (cursor);
+
+            if (unresolvedCount > 0) {
+              core.setFailed(
+                `There ${unresolvedCount === 1 ? 'is' : 'are'} ${unresolvedCount} unresolved conversation${unresolvedCount === 1 ? '' : 's'}.`
+              );
+            }
+
+            core.info('All PR conversations are resolved.');
