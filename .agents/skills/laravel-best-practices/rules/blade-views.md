@@ -5,9 +5,7 @@
 Hardcoding classes prevents consumers from adding their own. `merge()` combines class attributes cleanly.
 
 ```blade
-<div {{ $attributes->merge(['class' => 'alert alert-'.$type]) }}>
-    {{ $message }}
-</div>
+<div {{ $attributes->merge(['class' => 'alert alert-'.$type]) }}> {{ $message }}</div>
 ```
 
 ## Use `@pushOnce` for Per-Component Scripts
