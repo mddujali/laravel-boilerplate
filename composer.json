@@ -88,6 +88,15 @@
     ],
     "phpstan-analyse": [
       "./vendor/bin/phpstan analyse --memory-limit=4G"
+    ],
+    "refine": [
+      "composer dump-autoload",
+      "@php artisan optimize:clear",
+      "composer rector-process",
+      "composer phpstan-analyse",
+      "composer ide-helper",
+      "npm run lint:fix",
+      "npm run format:write"
     ]
   },
   "extra": {
