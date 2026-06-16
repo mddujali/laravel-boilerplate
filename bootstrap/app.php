@@ -2,22 +2,91 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\Json\HttpJsonException;
+use App\Support\Traits\Http\Templates\Requests\Api\ResponseTemplate;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            Route::middleware('api')
+                ->prefix('api')
+                ->name('api.')
+                ->group(base_path('routes/api.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-
+        $middleware->alias([]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
-        );
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                $status = Response::HTTP_UNAUTHORIZED;
+                $errorCode = studly(Response::$statusTexts[$status]);
+                $message = period_at_the_end(__('shared.http.' . $status));
+                $data = $request->all();
+                $errors = [
+                    'server' => $exception->getMessage(),
+                ];
+                $context = [
+                    'message' => $message,
+                    'data' => $data,
+                    'errors' => $errors,
+                ];
+
+                Log::error($message, $context);
+
+                return (new class () {
+                    use ResponseTemplate;
+                })->errorResponse(
+                    status: $status,
+                    errorCode: $errorCode,
+                    message: $message,
+                    errors: $errors,
+                );
+            }
+        });
+
+        $exceptions->render(function (HttpJsonException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                $status = $exception->getStatus() !== 419
+                    ? $exception->getStatus()
+                    : Response::HTTP_FORBIDDEN;
+                $errorCode = filled($exception->getErrorCode())
+                    ? $exception->getErrorCode()
+                    : studly(Response::$statusTexts[$status]);
+                $message = filled($exception->getMessage())
+                    ? $exception->getMessage()
+                    : Response::$statusTexts[$status];
+                $data = $request->all();
+                $errors = $exception->getErrors();
+                $context = [
+                    'message' => $message,
+                    'data' => $data,
+                    'errors' => $errors,
+                ];
+
+                Log::error($message, $context);
+
+                return (new class () {
+                    use ResponseTemplate;
+                })->errorResponse(
+                    status: $status,
+                    errorCode: $errorCode,
+                    message: $message,
+                    errors: $errors,
+                );
+            }
+        });
+
     })->create();
